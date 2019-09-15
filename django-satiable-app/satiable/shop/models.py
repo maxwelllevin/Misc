@@ -8,6 +8,7 @@ class Item(models.Model):
     """An item is something that can be or was for sale in the shop."""
     title = models.CharField(max_length=140)
     description = models.CharField(max_length=400)
+    # featured_img = models.CharField(max_length=200)
     price = models.IntegerField()  # TODO: Let this take on decimal values
     num_available = models.IntegerField()  # Number of available copies
     num_purchased = models.IntegerField(default=0)  # Number of copies that have been sold
@@ -16,8 +17,11 @@ class Item(models.Model):
     def __str__(self):
         return self.title
 
+    def is_available(self):
+        return self.num_available > 0 and self.pub_date <= timezone.now()
+
     def was_published_recently(self):
-        return self.pub_date >= timezone.now() - datetime.timedelta(days=5)
+        return self.is_available() and self.pub_date >= timezone.now() - datetime.timedelta(days=5)
 
 
 class ItemImage(models.Model):

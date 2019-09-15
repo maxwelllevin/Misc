@@ -1,0 +1,21 @@
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+</head>
+
+<h1>{{ item.title }}</h1>
+<p>{{ item.description }}</p>
+
+<ul>
+    {% for img in item.itemimage_set.all %}
+        <img class=".img-thumbnail rounded" src="{{ img.img_path }}" alt="img.alt_text">
+    {% endfor %}
+</ul>
+
+
+<div>
+    <a href="{% url 'shop:purchase' item.id %}">
+        <button class="btn btn-primary btn-large">Purchase</button>
+    </a>
+</div>
