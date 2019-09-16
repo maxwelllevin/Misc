@@ -23,6 +23,12 @@ class Item(models.Model):
     def was_published_recently(self):
         return self.is_available() and self.pub_date >= timezone.now() - datetime.timedelta(days=5)
 
+    def purchase(self):
+        if self.is_available():
+            self.num_available -= 1
+            self.num_purchased += 1
+        return
+
 
 class ItemImage(models.Model):
     """An ItemImage is a picture of a particular item. There can be many pictures of a single item."""

@@ -19,7 +19,7 @@ def detail(request, item_id):
 
 def purchase(request, item_id):
     item = get_object_or_404(Item, pk=item_id)
-    if not item.is_available():
-        return Http404("Item is not available for purchase")
+    if item.is_available():
+        item.purchase()
     context = {'item': item}
     return render(request, 'shop/purchase.html', context)
