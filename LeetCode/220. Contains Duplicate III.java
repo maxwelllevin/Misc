@@ -1,41 +1,24 @@
-import java.util.ArrayList;
-class Solution {
-    
-    // Idea:    Use a sliding window to keep track of a sorted list of elements.
-    public boolean containsNearbyAlmostDuplicate(int[] nums, int K, int T) {
-        if (nums == null || K <= 0 || T < 0) return false;
-        
-        K = Math.min(K + 1, nums.length);
-        ArrayList<Long> W = new ArrayList<>();
-        
-        for (int i = 0; i < K; i++) W.add((long)nums[i]);
-        
-        Collections.sort(W);
-        
-        for (int i = 1; i < W.size(); i++) {
-            if (W.get(i) - W.get(i-1) <= T) return true;
-        }
-        
-        for (int i = K; i < nums.length; i++) {
-            int oldIdx = find(W, nums[i - K]);
-            W.remove(oldIdx);
-            int idx = find(W, nums[i]);  // the index where nums[i] will be inserted
-            if (idx < W.size() && W.get(idx) - nums[i] <= T) return true;  // checking to the right
-            if (idx - 1 >= 0 && nums[i] - W.get(idx-1) <= T) return true;  // checking to the left
-            W.add(idx, (long)nums[i]);
-        }
-        
-        return false;
+// Updated: Now uses solution obtained after reading through the discussion board. 
+public class Solution {
+    // Get the ID of the bucket from element value x and bucket width w
+    // In Java, `-3 / 5 = 0` but we need `-3 / 5 = -1`.
+    private long getBucket(long x, long bucketSize) {
+        if (x < 0) return (x + 1) / bucketSize - 1;
+        return x / bucketSize;
     }
-    
-    private int find(ArrayList<Long> W, int target) {
-        int left = 0, right = W.size();
-        while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (target < W.get(mid)) right = mid;
-            else if (target > W.get(mid)) left = mid + 1;
-            else return mid;
+
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+        if (nums == null || t < 0 || k <= 0) return false;
+        Map<Long, Long> buckets = new HashMap<>();
+        long T = (long)t + 1;
+        for (int i = 0; i < nums.length; i++) {
+            long m = getBucket(nums[i], T);
+            if (buckets.containsKey(m)) return true;
+            if (buckets.containsKey(m - 1) && Math.abs(nums[i] - buckets.get(m - 1)) < T) return true;
+            if (buckets.containsKey(m + 1) && Math.abs(nums[i] - buckets.get(m + 1)) < T) return true;
+            buckets.put(m, (long)nums[i]);
+            if (i >= k) buckets.remove(getBucket(nums[i - k], T));
         }
-        return left;
+        return false;
     }
 }
